@@ -28,22 +28,16 @@ alias release "flow release"
 alias hotfix "flow hotfix"
 alias support "flow support"
 
-function __is_inside_git_repo
-	git rev-parse 2> /dev/null
-end
-
-function diff -d "git diff if under git repo, or normal diff if outside git diff"
-	__is_inside_git_repo
-
-	if [ $status -eq 0 ]
-		sh -c "git diff $argv"
+function gdiff -d "git diff if under git repo, or normal diff if outside git diff" --argument-names fn
+	if [ $fn ]
+		git diff $fn
 	else
-		command diff $argv
+		git-cola diff
 	end
 end
 
 function remove-cached -d "remove specified file from git repo" --argument-names fn
-	if test -n $fn
+	if [ $fn ]
 		remove --cached $fn
 		remove $f
 	else
@@ -52,7 +46,7 @@ function remove-cached -d "remove specified file from git repo" --argument-names
 end
 
 function remove-all-ext -d "remove all files with extension from git repo" --argument-names ext
-	if test -n $ext
+	if [ $ext ]
 		for f in (find . -name "*.ext")
 			remove-cached $f
 		end
